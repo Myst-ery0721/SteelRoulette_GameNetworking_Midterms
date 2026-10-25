@@ -21,8 +21,10 @@ public class AimCone : MonoBehaviour
         mesh = new Mesh();
         cone.AddComponent<MeshFilter>().mesh = mesh;
         var r = cone.AddComponent<MeshRenderer>();
-        r.sharedMaterial = GetComponent<SpriteRenderer>().sharedMaterial;
-        r.sortingOrder = 5;
+        var playerSprite = GetComponent<SpriteRenderer>();
+        r.sharedMaterial = playerSprite.sharedMaterial;
+        r.sortingLayerID = playerSprite.sortingLayerID;      // same layer as the player
+        r.sortingOrder = playerSprite.sortingOrder + 1;      // drawn just above the player
     }
 
     void LateUpdate()

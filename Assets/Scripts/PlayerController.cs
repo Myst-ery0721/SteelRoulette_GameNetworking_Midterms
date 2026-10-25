@@ -3,12 +3,17 @@ using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
 
-// Goes on the Player prefab: movement, attacking, health, weapon and buffs.
+// Goes on the Player prefab: movement, attacking, health, weapon, buffs and animations.
+// Animator needs: a Bool "IsMoving" and a Trigger "Attack".
 public class PlayerController : NetworkBehaviour
 {
     public static List<PlayerController> All = new List<PlayerController>();
 
     public float baseSpeed = 5f;
+    public Vector2 centerOffset = new Vector2(0f, 0.5f);   // from the feet to the middle of the body
+
+    // The middle of the player's body (used for the aim cone and hits)
+    public Vector2 Center => (Vector2)transform.position + centerOffset;
     public GameObject crown;   // a child object shown only on the Monarch
 
     // STATE (NetworkVariables, Write: Server)
@@ -33,6 +38,12 @@ public class PlayerController : NetworkBehaviour
     Rigidbody2D rb;
     float nextAttackTime;
 
+    // Animation
+    Animator animator;
+    NetworkAnimator networkAnimator;   // set its Authority Mode to Owner
+    SpriteRenderer sprite;
+    Vector3 lastPosition;
+
     public override void OnNetworkSpawn()
     {
         All.Add(this);
@@ -40,6 +51,11 @@ public class PlayerController : NetworkBehaviour
         // Use the child named "Crown" (so you don't have to fill the slot)
         var crownChild = transform.Find("Crown");
         crown = crownChild != null ? crownChild.gameObject : null;
+
+        animator = GetComponent<Animator>();
+        networkAnimator = GetComponent<NetworkAnimator>();
+        sprite = GetComponent<SpriteRenderer>();
+        lastPosition = transform.position;
 
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0;          // top-down: no falling
@@ -62,6 +78,11 @@ public class PlayerController : NetworkBehaviour
         GetComponent<Collider2D>().enabled = IsAlive;
         if (crown != null) crown.SetActive(IsAlive && IsMonarch);
 
+        // Face left or right (works for every player on every screen)
+        float movedX = transform.position.x - lastPosition.x;
+        lastPosition = transform.position;
+        if (Mathf.Abs(movedX) > 0.001f) sprite.flipX = movedX < 0;
+
         if (!IsOwner) return;
 
         bool canAct = GameManager.Instance.isMatchActive.Value && IsAlive;
@@ -75,13 +96,17 @@ public class PlayerController : NetworkBehaviour
         rb.velocity = canAct ? input * speed : Vector2.zero;
 #endif
 
+        // ANIMATION: Run while moving, Combat Ready while standing still
+        animator.SetBool("IsMoving", canAct && input != Vector2.zero);
+
         // Attack toward the mouse with left click
         if (canAct && Input.GetMouseButtonDown(0) && Time.time >= nextAttackTime)
         {
             nextAttackTime = Time.time + CurrentWeapon.cooldown;
             LastSwingTime = Time.time;
+            networkAnimator.SetTrigger("Attack");   // ANIMATION: swing (shows on every screen)
             Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            AttackServerRpc((mouse - (Vector2)transform.position).normalized);
+            AttackServerRpc((mouse - Center).normalized);
         }
     }
 
@@ -97,7 +122,7 @@ public class PlayerController : NetworkBehaviour
         {
             if (target == this || !target.IsAlive) continue;
 
-            Vector2 toTarget = target.transform.position - transform.position;
+            Vector2 toTarget = target.Center - Center;
             bool inRange = toTarget.magnitude <= CurrentWeapon.range;
             bool inFront = Vector2.Dot(aim, toTarget.normalized) > SwingWidth;
 

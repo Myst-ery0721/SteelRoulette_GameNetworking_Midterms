@@ -18,15 +18,19 @@ MonoBehaviour:
   m_EnableEditors: 1
   m_MainEditorInstance:
     Name: Main Editor
-    <CorrespondingNodeId>k__BackingField: 
-    m_Nodes: []
+    <CorrespondingNodeId>k__BackingField: Main Editor|0_run
+    m_Nodes:
+    - Main Editor|0_run
+    - Main Editor|0_deploy
     m_Role: 1
     m_PlayerTag: 
-    m_InitialScene: {fileID: 0}
+    m_InitialScene: {fileID: 102900000, guid: 8c9cfa26abfee488c85f1582747f6a02, type: 3}
   m_EditorInstances:
   - Name: Player 2
-    <CorrespondingNodeId>k__BackingField: 
-    m_Nodes: []
+    <CorrespondingNodeId>k__BackingField: Player 2|1_run
+    m_Nodes:
+    - Player 2|1_run
+    - Player 2|1_deploy
     m_Role: 1
     m_PlayerTag: 
     m_InitialScene: {fileID: 0}
@@ -34,23 +38,16 @@ MonoBehaviour:
       StreamLogsToMainEditor: 0
       LogsColor: {r: 0.3643, g: 0.581, b: 0.8679, a: 1}
   - Name: Player 3
-    <CorrespondingNodeId>k__BackingField: 
-    m_Nodes: []
+    <CorrespondingNodeId>k__BackingField: Player 3|2_run
+    m_Nodes:
+    - Player 3|2_run
+    - Player 3|2_deploy
     m_Role: 1
     m_PlayerTag: 
     m_InitialScene: {fileID: 0}
     m_AdvancedConfiguration:
       StreamLogsToMainEditor: 0
-      LogsColor: {r: 0.3643, g: 0.581, b: 0.8679, a: 1}
-  - Name: Player 4
-    <CorrespondingNodeId>k__BackingField: 
-    m_Nodes: []
-    m_Role: 1
-    m_PlayerTag: 
-    m_InitialScene: {fileID: 0}
-    m_AdvancedConfiguration:
-      StreamLogsToMainEditor: 0
-      LogsColor: {r: 0.3643, g: 0.581, b: 0.8679, a: 1}
+      LogsColor: {r: 0.42336237, g: 0.8666667, b: 0.36470592, a: 1}
   m_LocalInstances: []
   m_RemoteInstances: []
   m_MainEditorInstanceObsolete:

@@ -31,11 +31,11 @@ public class AimCone : MonoBehaviour
         cone.SetActive(show);
         if (!show) return;
 
-        cone.transform.position = transform.position;
+        cone.transform.position = player.Center;
 
         // Aim direction and cone size
         Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 dir = mouse - (Vector2)transform.position;
+        Vector2 dir = mouse - player.Center;
         float aim = Mathf.Atan2(dir.y, dir.x);
         float half = Mathf.Acos(PlayerController.SwingWidth);   // half the swing angle
         float range = player.CurrentWeapon.range;
